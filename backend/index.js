@@ -2,9 +2,29 @@ import express from "express"
 import dotenv from "dotenv"
 import mongoose from "mongoose";
 import courseRoute from "./routes/course.route.js";
+import fileUpload from "express-fileupload";
+import { v2 as cloudinary } from 'cloudinary';
 
 const app = express()
 dotenv.config();
+
+//middleware for parsing the json data
+app.use(express.json());
+app.use(
+    fileUpload({
+      useTempFiles: true,
+      tempFileDir: "/tmp/",
+    })
+  );
+
+  
+//cloudinary Configuration
+cloudinary.config({
+    cloud_name: process.env.cloud_name,
+    api_key: process.env.api_key,
+    api_secret: process.env.api_secret,
+  });
+
 const port = process.env.PORT || 3000;
 const DB_URI = process.env.MONGO_URI;
 
