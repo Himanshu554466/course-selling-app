@@ -1,6 +1,7 @@
 import express from "express"
 import dotenv from "dotenv"
 import mongoose from "mongoose";
+import courseRoute from "./routes/course.route.js";
 
 const app = express()
 dotenv.config();
@@ -17,6 +18,9 @@ try {
 app.get('/', (req, res) => {
   res.send('Hello World!')
 })
+
+// defining routes
+app.use("/api/v1/course", courseRoute); //v1 represent first version,it,s a standard way
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
