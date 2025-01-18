@@ -130,3 +130,77 @@ Agar koi field missing hai (image?.public_id), toh error avoid karne ke liye ?. 
     // Debugging ke liye error ko console me log karte hain.
   }
 };
+
+export const deleteCourse = async (req, res) => {
+  // Asynchronous function banaya gaya hai kisi course ko delete karne ke liye.
+
+  const { courseId } = req.params;
+  // URL ke params se `courseId` extract karte hain jo delete hone wale course ko identify karega.
+
+  try {
+    const course = await Course.findOneAndDelete({
+      _id: courseId,
+    });
+    // Database me course ko `courseId` ke basis par dhoondh kar delete karte hain.
+
+    if (!course) {
+      // Agar course nahi milta, toh `404 Course not found` error return karte hain.
+      return res.status(404).json({ errors: "Course not found" });
+    }
+
+    res.status(200).json({ message: "Course deleted successfully" });
+    // Agar course successfully delete ho jaye, toh `200 OK` response ke saath success message bhejte hain.
+  } catch (error) {
+    res.status(500).json({ errors: "Error in course deleting" });
+    // Agar koi error aaye, toh `500 Internal Server Error` ka response bhejte hain.
+
+    console.log("Error in course deleting", error);
+    // Debugging ke liye error ko console me log karte hain.
+  }
+};
+
+export const getCourses = async (req, res) => {
+    // Yeh function saare courses ko fetch karne ke liye banaya gaya hai.
+  
+    try {
+      const courses = await Course.find({});
+      // Database se saare courses ko fetch karte hain.
+  
+      res.status(201).json({ courses });
+      // Agar courses successfully mil jayein, toh `201 Created` status ke saath response bhejte hain.
+    } catch (error) {
+      res.status(500).json({ errors: "Error in getting courses" });
+      // Agar koi error aaye, toh `500 Internal Server Error` ka response bhejte hain.
+  
+      console.log("error to get courses", error);
+      // Debugging ke liye error ko console me log karte hain.
+    }
+  };
+  
+  
+  export const courseDetails = async (req, res) => {
+    // Yeh function specific course ki details fetch karne ke liye banaya gaya hai.
+  
+    const { courseId } = req.params;
+    // URL ke params se `courseId` ko extract karte hain jo identify karega ki kaunsa course fetch karna hai.
+  
+    try {
+      const course = await Course.findById(courseId);
+      // `courseId` ke basis par database se specific course ko fetch karte hain.
+  
+      if (!course) {
+        // Agar course nahi milta, toh `404 Not Found` error return karte hain.
+        return res.status(404).json({ error: "Course not found" });
+      }
+  
+      res.status(200).json({ course });
+      // Agar course successfully mil jaye, toh `200 OK` status ke saath response bhejte hain.
+    } catch (error) {
+      res.status(500).json({ errors: "Error in getting course details" });
+      // Agar koi error aaye, toh `500 Internal Server Error` ka response bhejte hain.
+  
+      console.log("Error in course details", error);
+      // Debugging ke liye error ko console me log karte hain.
+    }
+  };
+  
