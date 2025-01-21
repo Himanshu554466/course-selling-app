@@ -2,6 +2,7 @@ import express from "express"
 import dotenv from "dotenv"
 import mongoose from "mongoose";
 import courseRoute from "./routes/course.route.js";
+import userRoute from "./routes/user.route.js";
 import fileUpload from "express-fileupload";
 import { v2 as cloudinary } from 'cloudinary';
 
@@ -41,7 +42,7 @@ app.get('/', (req, res) => {
 
 // defining routes
 app.use("/api/v1/course", courseRoute); //v1 represent first version,it,s a standard way
-
+app.use("/api/v1/user", userRoute);
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })

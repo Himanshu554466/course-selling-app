@@ -20,4 +20,12 @@ For that first we need to install cloudinary in our package.json by using npm i 
 FOR COURSE UPDATION
 we update our course by using id in database
 
-F
+
+USERS
+1.]import bcrypt from "bcryptjs"; for hashing the password
+2.]Zod for server aand client side validation
+3.] JWT Validation
+
+
+middleWare crated for validating the token when we buy courses
+
