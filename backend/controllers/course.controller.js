@@ -161,96 +161,93 @@ export const deleteCourse = async (req, res) => {
 };
 
 export const getCourses = async (req, res) => {
-    // Yeh function saare courses ko fetch karne ke liye banaya gaya hai.
-  
-    try {
-      const courses = await Course.find({});
-      // Database se saare courses ko fetch karte hain.
-  
-      res.status(201).json({ courses });
-      // Agar courses successfully mil jayein, toh `201 Created` status ke saath response bhejte hain.
-    } catch (error) {
-      res.status(500).json({ errors: "Error in getting courses" });
-      // Agar koi error aaye, toh `500 Internal Server Error` ka response bhejte hain.
-  
-      console.log("error to get courses", error);
-      // Debugging ke liye error ko console me log karte hain.
-    }
-  };
-  
-  
-  export const courseDetails = async (req, res) => {
-    // Yeh function specific course ki details fetch karne ke liye banaya gaya hai.
-  
-    const { courseId } = req.params;
-    // URL ke params se `courseId` ko extract karte hain jo identify karega ki kaunsa course fetch karna hai.
-  
-    try {
-      const course = await Course.findById(courseId);
-      // `courseId` ke basis par database se specific course ko fetch karte hain.
-  
-      if (!course) {
-        // Agar course nahi milta, toh `404 Not Found` error return karte hain.
-        return res.status(404).json({ error: "Course not found" });
-      }
-  
-      res.status(200).json({ course });
-      // Agar course successfully mil jaye, toh `200 OK` status ke saath response bhejte hain.
-    } catch (error) {
-      res.status(500).json({ errors: "Error in getting course details" });
-      // Agar koi error aaye, toh `500 Internal Server Error` ka response bhejte hain.
-  
-      console.log("Error in course details", error);
-      // Debugging ke liye error ko console me log karte hain.
-    }
-  };
+  // Yeh function saare courses ko fetch karne ke liye banaya gaya hai.
 
-  export const buyCourses = async (req, res) => {
-    const { userId } = req;
-    //  Middleware ke through userId ko `req` object me inject kiya gaya hai, taaki current user ka ID access kiya ja sake.
-  
-    const { courseId } = req.params;
-    //  URL params se `courseId` ko extract karte hain, jo purchase hone wale course ko uniquely identify karega.
-  
-    try {
-      const course = await Course.findById(courseId);
-      //  Database me `courseId` ke basis par course ko dhoondte hain, taaki ensure kar sakein ki course exist karta hai.
-  
-      if (!course) {
-        //  Agar course nahi milta, toh `404 Not Found` error return karte hain.
-        return res.status(404).json({ errors: "Course not found" });
-      }
-  
-      // **Check for Existing Purchase**
-      const existingPurchase = await Purchase.findOne({ userId, courseId });
-      //  Check karte hain ki user ne pehle se yeh course kharida hai ya nahi.
-  
-      if (existingPurchase) {
-        //  Agar user ne course already purchase kar liya hai, toh `400 Bad Request` error bhejte hain.
-        return res
-          .status(400)
-          .json({ errors: "User has already purchased this course" });
-      }
-  
-      // **Create New Purchase**
-      const newPurchase = Purchase({ userId, courseId });
-      //  Naya purchase object banate hain jo user aur course ke IDs ko store karega.
-  
-      await newPurchase.save();
-      //  Naye purchase ko database me save karte hain.
-  
-      res.status(201).json({
-        message: "Course purchased successfully",
-        newPurchase,
-        //  Success message ke saath naye purchase ka data client ko bhejte hain.
-      });
-    } catch (error) {
-      res.status(500).json({ errors: "Error in course buying" });
-      //  Agar koi unexpected error aaye, toh `500 Internal Server Error` response bhejte hain.
-  
-      console.log("error in course buying ", error);
-      //  Debugging ke liye error ko console me log karte hain.
+  try {
+    const courses = await Course.find({});
+    // Database se saare courses ko fetch karte hain.
+
+    res.status(201).json({ courses });
+    // Agar courses successfully mil jayein, toh `201 Created` status ke saath response bhejte hain.
+  } catch (error) {
+    res.status(500).json({ errors: "Error in getting courses" });
+    // Agar koi error aaye, toh `500 Internal Server Error` ka response bhejte hain.
+
+    console.log("error to get courses", error);
+    // Debugging ke liye error ko console me log karte hain.
+  }
+};
+
+export const courseDetails = async (req, res) => {
+  // Yeh function specific course ki details fetch karne ke liye banaya gaya hai.
+
+  const { courseId } = req.params;
+  // URL ke params se `courseId` ko extract karte hain jo identify karega ki kaunsa course fetch karna hai.
+
+  try {
+    const course = await Course.findById(courseId);
+    // `courseId` ke basis par database se specific course ko fetch karte hain.
+
+    if (!course) {
+      // Agar course nahi milta, toh `404 Not Found` error return karte hain.
+      return res.status(404).json({ error: "Course not found" });
     }
-  };
-  
-  
+
+    res.status(200).json({ course });
+    // Agar course successfully mil jaye, toh `200 OK` status ke saath response bhejte hain.
+  } catch (error) {
+    res.status(500).json({ errors: "Error in getting course details" });
+    // Agar koi error aaye, toh `500 Internal Server Error` ka response bhejte hain.
+
+    console.log("Error in course details", error);
+    // Debugging ke liye error ko console me log karte hain.
+  }
+};
+
+export const buyCourses = async (req, res) => {
+  const { userId } = req;
+  //  Middleware ke through userId ko `req` object me inject kiya gaya hai, taaki current user ka ID access kiya ja sake.
+
+  const { courseId } = req.params;
+  //  URL params se `courseId` ko extract karte hain, jo purchase hone wale course ko uniquely identify karega.
+
+  try {
+    const course = await Course.findById(courseId);
+    //  Database me `courseId` ke basis par course ko dhoondte hain, taaki ensure kar sakein ki course exist karta hai.
+
+    if (!course) {
+      //  Agar course nahi milta, toh `404 Not Found` error return karte hain.
+      return res.status(404).json({ errors: "Course not found" });
+    }
+
+    // **Check for Existing Purchase**
+    const existingPurchase = await Purchase.findOne({ userId, courseId });
+    //  Check karte hain ki user ne pehle se yeh course kharida hai ya nahi.
+
+    if (existingPurchase) {
+      //  Agar user ne course already purchase kar liya hai, toh `400 Bad Request` error bhejte hain.
+      return res
+        .status(400)
+        .json({ errors: "User has already purchased this course" });
+    }
+
+    // **Create New Purchase**
+    const newPurchase = Purchase({ userId, courseId });
+    //  Naya purchase object banate hain jo user aur course ke IDs ko store karega.
+
+    await newPurchase.save();
+    //  Naye purchase ko database me save karte hain.
+
+    res.status(201).json({
+      message: "Course purchased successfully",
+      newPurchase,
+      //  Success message ke saath naye purchase ka data client ko bhejte hain.
+    });
+  } catch (error) {
+    res.status(500).json({ errors: "Error in course buying" });
+    //  Agar koi unexpected error aaye, toh `500 Internal Server Error` response bhejte hain.
+
+    console.log("error in course buying ", error);
+    //  Debugging ke liye error ko console me log karte hain.
+  }
+};

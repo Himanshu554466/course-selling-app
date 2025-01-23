@@ -2,8 +2,10 @@ import { User } from "../models/user.model.js";
 // User model ko import karte hain jo database ke saath interact karega.
 import { z } from "zod";
 import jwt from "jsonwebtoken";
+import { Purchase } from "../models/purchase.model.js";
 import bcrypt from "bcryptjs";
 import config from "../config.js";
+import { Course } from "../models/course.model.js";
 
 // Password ko securely store karne ke liye hashing ka use karte hain, aur bcrypt ek popular library hai.
 
@@ -157,5 +159,39 @@ export const logout = (req, res) => {
   } catch (error) {
     res.status(500).json({ errors: "Error in logout" });
     console.log("Error in logout", error);
+  }
+};
+
+export const purchases = async (req, res) => {
+  const userId = req.userId;
+  // Middleware ke through `userId` ko request object me inject kiya gaya hai.
+  // Ye user ke purchases ko identify karne ke liye use hota hai.
+
+  try {
+    const purchased = await Purchase.find({ userId });
+    // Purchase collection me `userId` ke basis par user ke saare purchases fetch karte hain.
+
+    let purchasedCourseId = [];
+    // User ke purchased courses ke IDs ko collect karne ke liye empty array banate hain.
+
+    for (let i = 0; i < purchased.length; i++) {
+      purchasedCourseId.push(purchased[i].courseId);
+    }
+    // Purchased items ke course IDs ko array me push karte hain.
+
+    const courseData = await Course.find({
+      _id: { $in: purchasedCourseId },
+    });
+    // Course collection me un IDs ke basis par course details fetch karte hain jo user ne purchase ki hain.
+
+    res.status(200).json({ purchased, courseData });
+    // Success response ke saath purchased items aur corresponding course details ko client ko bhejte hain.
+
+  } catch (error) {
+    res.status(500).json({ errors: "Error in purchases" });
+    // Agar koi error aaye toh `500 Internal Server Error` response bhejte hain.
+
+    console.log("Error in purchase", error);
+    // Debugging ke liye error ko console me log karte hain.
   }
 };
