@@ -120,13 +120,22 @@ export const login = async (req, res) => {
       {
         id: user._id, // Token payload me user ka unique ID add karte hain.
       },
-      config.JWT_USER_PASSWORD // Secret key JWT ko sign karne ke liye.
+      config.JWT_USER_PASSWORD,
+      { expiresIn: "1d" } // Secret key JWT ko sign karne ke liye.
     );
     //JWT token user ke authentication ke liye generate karte hain.
     // Is token ka use baad me protected routes access karne ke liye hoga.
 
+    const cookieOptions = {
+      expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
+      httpOnly: true, //  can't be accsed via js directly
+      secure: process.env.NODE_ENV === "production", // true for https only
+      sameSite: "Strict", // CSRF attacks
+    };
     // 4. Store the token in a cookie
-    res.cookie("jwt", token);
+    res.cookie("jwt", token, cookieOptions);
+
+
     // JWT token ko client ke browser me securely store karte hain cookies ke madhyam se.
 
     // 5. Respond with success and token

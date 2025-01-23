@@ -1,6 +1,7 @@
 import { Course } from "../models/course.model.js";
 // Course model ko import karte hain jo database ke saath interact karega.
 import { v2 as cloudinary } from "cloudinary";
+import { Purchase } from "../models/purchase.model.js";
 
 export const createCourse = async (req, res) => {
   // Asynchronous function banaya course create karne ke liye.
@@ -203,4 +204,53 @@ export const getCourses = async (req, res) => {
       // Debugging ke liye error ko console me log karte hain.
     }
   };
+
+  export const buyCourses = async (req, res) => {
+    const { userId } = req;
+    //  Middleware ke through userId ko `req` object me inject kiya gaya hai, taaki current user ka ID access kiya ja sake.
+  
+    const { courseId } = req.params;
+    //  URL params se `courseId` ko extract karte hain, jo purchase hone wale course ko uniquely identify karega.
+  
+    try {
+      const course = await Course.findById(courseId);
+      //  Database me `courseId` ke basis par course ko dhoondte hain, taaki ensure kar sakein ki course exist karta hai.
+  
+      if (!course) {
+        //  Agar course nahi milta, toh `404 Not Found` error return karte hain.
+        return res.status(404).json({ errors: "Course not found" });
+      }
+  
+      // **Check for Existing Purchase**
+      const existingPurchase = await Purchase.findOne({ userId, courseId });
+      //  Check karte hain ki user ne pehle se yeh course kharida hai ya nahi.
+  
+      if (existingPurchase) {
+        //  Agar user ne course already purchase kar liya hai, toh `400 Bad Request` error bhejte hain.
+        return res
+          .status(400)
+          .json({ errors: "User has already purchased this course" });
+      }
+  
+      // **Create New Purchase**
+      const newPurchase = Purchase({ userId, courseId });
+      //  Naya purchase object banate hain jo user aur course ke IDs ko store karega.
+  
+      await newPurchase.save();
+      //  Naye purchase ko database me save karte hain.
+  
+      res.status(201).json({
+        message: "Course purchased successfully",
+        newPurchase,
+        //  Success message ke saath naye purchase ka data client ko bhejte hain.
+      });
+    } catch (error) {
+      res.status(500).json({ errors: "Error in course buying" });
+      //  Agar koi unexpected error aaye, toh `500 Internal Server Error` response bhejte hain.
+  
+      console.log("error in course buying ", error);
+      //  Debugging ke liye error ko console me log karte hain.
+    }
+  };
+  
   
