@@ -5,7 +5,7 @@ import { Purchase } from "../models/purchase.model.js";
 
 export const createCourse = async (req, res) => {
   // Asynchronous function banaya course create karne ke liye.
-
+  const adminId = req.adminId
   const { title, description, price, image } = req.body;
   // Client se aayi request ke body se title, description, aur price extract karte hain.
 
@@ -57,6 +57,7 @@ export const createCourse = async (req, res) => {
         public_id: cloud_response.public_id,
         url: cloud_response.url,
       },
+      creatorId:adminId
     };
 
     // Database mein naya course create karte hain.
@@ -79,7 +80,7 @@ export const createCourse = async (req, res) => {
 
 export const updateCourse = async (req, res) => {
   // Yeh function ek existing course ko update karne ke liye banaya gaya hai.
-
+  const adminId = req.adminId //we adding our adminId in our database
   const { courseId } = req.params;
   // URL ke params se `courseId` extract karte hain jo update hone wale course ko identify karega.
   /*   why?
@@ -102,7 +103,9 @@ Yeh data hi database me update kiya jayega. */
     }
 
     const course = await Course.findOneAndUpdate(
-      { _id: courseId }, // Course ko `courseId` ke basis par find karte hain.
+      { _id: courseId,
+        creatorId:adminId, //only admin update the course
+       }, // Course ko `courseId` ke basis par find karte hain.
       {
         title, // Title update karte hain.
         description, // Description update karte hain.
@@ -134,13 +137,14 @@ Agar koi field missing hai (image?.public_id), toh error avoid karne ke liye ?. 
 
 export const deleteCourse = async (req, res) => {
   // Asynchronous function banaya gaya hai kisi course ko delete karne ke liye.
-
+  const adminId = req.adminId
   const { courseId } = req.params;
   // URL ke params se `courseId` extract karte hain jo delete hone wale course ko identify karega.
 
   try {
     const course = await Course.findOneAndDelete({
       _id: courseId,
+      creatorId:adminId,
     });
     // Database me course ko `courseId` ke basis par dhoondh kar delete karte hain.
 

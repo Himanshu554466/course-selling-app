@@ -154,11 +154,23 @@ export const login = async (req, res) => {
 
 export const logout = (req, res) => {
   try {
-    res.clearCookie("jwt");
+    if(!req.cookies.jwt){
+        return res.status(401).json({errors: "KIndly login first"})
+    }
+    res.clearCookie("jwt", { httpOnly: true, secure: true });
+    // Logout karte time JWT cookie ko clear karte hain.
+
+    res.setHeader("Cache-Control", "no-store");
+    // Cache ko disable karte hain taaki sensitive data access na ho.
+
     res.status(200).json({ message: "Logged out successfully" });
+    // Logout hone ke baad success message bhejte hain.
   } catch (error) {
     res.status(500).json({ errors: "Error in logout" });
+    // Agar logout ke dauraan error aaye, toh 500 Internal Server Error return karte hain.
+
     console.log("Error in logout", error);
+    // Debugging ke liye error console me log karte hain.
   }
 };
 

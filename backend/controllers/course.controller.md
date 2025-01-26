@@ -29,3 +29,10 @@ USERS
 
 middleWare crated for validating the token when we buy courses
 
+ADMIN
+middleware define for admin
+jwt_secret for admin
+
+next target is to protect our cntoller like only admin have to create,delete,update the couurse
+for that first we need to verify the token by using middleware
+
